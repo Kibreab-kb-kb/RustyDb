@@ -27,7 +27,7 @@ impl InputBuffer{
     fn new()->InputBuffer{
         InputBuffer { buffer: String::new(), }
     }
-}
+} 
 
 fn print_prompt(){
     print!("db >");
@@ -91,7 +91,6 @@ fn execute_statement(statement:& Statement){
         
     }
 }
-
 
 
 fn main(){
