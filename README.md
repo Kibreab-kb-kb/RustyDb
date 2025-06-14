@@ -1,8 +1,10 @@
 kbdb — Simple In-Memory Database in Rust
 
 kbdb is a minimalist in-memory database implemented in Rust. It provides a foundational understanding of database internals by supporting basic SQL-like operations such as inserting and selecting rows, with simple error handling and table size limits.
-Future Plans
 
+
+    Future Plans
+    
     Persistent Storage: Implement durable data storage to save and load the database state between sessions.
 
     Advanced Query Language: Expand beyond basic insert/select to support update, delete, and complex queries with filtering and sorting capabilities.
