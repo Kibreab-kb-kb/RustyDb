@@ -86,37 +86,48 @@ pub fn do_meta_command(input_buffer:&InputBuffer)->MetaCommandResult{
     }
 }
 
-pub fn prepare_statement(input_buffer:&InputBuffer,statement:&mut Statement)->PrepareResult{
-    let parts:Vec<&str>=input_buffer.buffer.split_whitespace().collect();
+pub fn prepare_statement(input_buffer: &InputBuffer, statement: &mut Statement) -> PrepareResult {
+    let parts: Vec<&str> = input_buffer.buffer.split_whitespace().collect();
 
     match parts.get(0) {
-        
-        Some(&"insert")=>{
-            if parts.len()<4{
+        Some(&"insert") => {
+            if parts.len() < 4 {
                 return PrepareResult::SyntaxError;
             }
-            let id=match parts[1].parse::<u32>(){
-                Ok(n)=>n,
-                Err(_)=>return PrepareResult::SyntaxError,
+
+            let id = match parts[1].parse::<i32>() {
+                Ok(n) if n >= 0 => n as u32,
+                Ok(_) => {
+                    println!("Error: ID must be a non-negative integer.");
+                    return PrepareResult::SyntaxError;
+                }
+                Err(_) => {
+                    println!("Error: ID must be a number.");
+                    return PrepareResult::SyntaxError;
+                }
             };
+            
 
-            let username=parts[2].to_string();
-            let email=parts[3].to_string();
+            let username = parts[2].to_string();
+            let email = parts[3].to_string();
 
-            statement.stmt_type=StatementType::Insert;
-            statement.row_to_insert=Some(Row{id,username,email});
+            if username.len() > 32 || email.len() > 255 {
+                return PrepareResult::SyntaxError;
+            }
+
+            statement.stmt_type = StatementType::Insert;
+            statement.row_to_insert = Some(Row { id, username, email });
             PrepareResult::Success
         }
 
-        Some(&"select")=>{
-            statement.stmt_type=StatementType::Select;
-            statement.row_to_insert=None;
+        Some(&"select") => {
+            statement.stmt_type = StatementType::Select;
+            statement.row_to_insert = None;
             PrepareResult::Success
         }
 
-        _=>PrepareResult::UnrecognizedStatement,
+        _ => PrepareResult::UnrecognizedStatement,
     }
-  
 }
 
 pub fn execute_statement(statement: &Statement, table: &mut Table) -> ExecuteResult {
